@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/modal.css">
+    <title>Deadline Tracker</title>
+</head>
+<body>
+    <div id="navbar">
+        <a id="pageTitle" href="/">Deadline Tracker</a>
+        <button onclick="toggleModal(DeadlineModal)">Add</button>
+    </div>
+    <div id="soon"></div>
+    <div id="deadlinesLater"></div>
+    <div id="modalOverlay" class="modal-hidden" onclick="toggleModal()"></div>
+    <div id="modal" class="modal-hidden dialog" tabindex="-1">
+        <div>
+            <p id="modalTitle" style="margin-top: 5px;">Modal</p>
+            <button onclick="toggleModal()" id="closeModalBtn">Close</button>
+            <hr>
+            <div id="modalBody"></div>
+        </div>
+        <div id="modalFooter"></div>
+    </div>
+    <script src="js/index.js"></script>
+    <script src="js/modal.js"></script>
+    <script src="js/create.deadline.modal.js"></script>
+    <script src="js/display.details.modal.js"></script>
+</body>
+</html>

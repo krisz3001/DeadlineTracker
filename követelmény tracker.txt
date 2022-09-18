@@ -1,0 +1,12 @@
+weboldal amibe be lehet vinni mikorra mit kell csinálni
+- beadandók
+- vizsgák
+- zh-k
+- röpzh-k
+
+Features:
+- következő határidő kiemelése
+
+CREATE TABLE Deadlines(
+	Deadline DATETIME NOT NULL,
+)
