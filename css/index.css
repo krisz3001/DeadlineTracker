@@ -17,6 +17,10 @@ html, body{
     padding: 0px 10px;
     justify-content: space-between;
 }
+#navButtons{
+    display: flex;
+    gap: 10px;
+}
 #pageTitle{
     margin: 0;
     color: white;

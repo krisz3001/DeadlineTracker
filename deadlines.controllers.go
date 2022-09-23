@@ -25,10 +25,6 @@ type NewDeadline struct {
 }
 
 func Controller_Deadlines(w http.ResponseWriter, r *http.Request) {
-	token := r.Header.Get("Token")
-	if token == "" {
-		token = CreateToken()
-	}
 	switch r.Method {
 	case http.MethodGet:
 		result, err := GetDeadlines()
@@ -36,7 +32,7 @@ func Controller_Deadlines(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		SendResponse(w, result, token, "data")
+		SendResponse(w, result, "data")
 	case http.MethodPost:
 		var request NewDeadline
 		if !DecodeRequest(w, r, &request) {
@@ -47,15 +43,11 @@ func Controller_Deadlines(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		SendResponse(w, struct{}{}, token)
+		SendResponse(w, struct{}{})
 	}
 }
 
 func Controller_Deadlines_Id(w http.ResponseWriter, r *http.Request) {
-	token := r.Header.Get("token")
-	if token == "" {
-		token = CreateToken()
-	}
 	id, err := strconv.Atoi(mux.Vars(r)["id"])
 	if err != nil {
 		http.Error(w, "invalid id", http.StatusBadRequest)
@@ -68,7 +60,7 @@ func Controller_Deadlines_Id(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		SendResponse(w, result, token, "data")
+		SendResponse(w, result, "data")
 	case http.MethodPatch:
 		var request NewDeadline
 		if !DecodeRequest(w, r, &request) {
@@ -79,13 +71,13 @@ func Controller_Deadlines_Id(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		SendResponse(w, struct{}{}, token)
+		SendResponse(w, struct{}{})
 	case http.MethodDelete:
 		err := DeleteDeadline(id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		SendResponse(w, struct{}{}, token)
+		SendResponse(w, struct{}{})
 	}
 }

@@ -37,6 +37,19 @@ func GetDeadlineType(id int) (*DeadlineTypes, error) {
 	return result, nil
 }
 
+func DoesTypeExist(d NewDeadlineType) (bool, error) {
+	rows, err := db.Query("SELECT * FROM `DEADLINETYPES` WHERE `DeadlineTypeName`=?", d.DeadlineTypeName)
+	if err != nil {
+		return true, err
+	}
+	defer rows.Close()
+	if rows.Next() {
+		return true, nil
+	} else {
+		return false, nil
+	}
+}
+
 func CreateDeadlineType(d NewDeadlineType) error {
 	_, err := db.Exec("INSERT INTO `DEADLINETYPES` (`DeadlineTypeName`) VALUES (?)", d.DeadlineTypeName)
 	return err

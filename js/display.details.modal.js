@@ -1,22 +1,20 @@
 function DetailsModalBuilder(i){
-    document.querySelector('#modalTitle').innerText = 'Details'
-    var modal = document.querySelector('#modalBody')
-    var modalFooter = document.querySelector('#modalFooter')
-    modalFooter.innerHTML = ''
-    modal.innerHTML = ''
-    NewInput(modal, 'datetime-local', 'deadlineInput', 'Deadline', null, Deadlines.data[i].deadline)
-    NewSelect(modal, 'deadlineTypeSelect', 'Type', selectChanged)
-    NewSelect(modal, 'subjectSelect', 'Subject', selectChanged)
-    NewInput(modal, 'text', 'topicInput', 'Topic', null, Deadlines.data[i].topic)
-    NewInput(modal, 'text', 'commentsInput', 'Comments', null, Deadlines.data[i].comments)
-    NewButton(modalFooter, 'Update', function() {updateDeadline(i)})
-    NewButton(modalFooter, 'Delete', function() {deleteDeadline(i)})
+    ClearModal()
+    SetModalTitle('Details')
+    NewInput('datetime-local', 'deadlineInput', 'Deadline', inputChanged, Deadlines.data[i].deadline)
+    NewSelect('deadlineTypeSelect', 'Type', inputChanged)
+    NewSelect('subjectSelect', 'Subject', inputChanged)
+    NewInput('text', 'topicInput', 'Topic', inputChanged, Deadlines.data[i].topic)
+    NewInput('text', 'commentsInput', 'Comments', inputChanged, Deadlines.data[i].comments)
+    NewButton('Update', function() {updateDeadline(i)})
+    NewButton('Delete', function() {deleteDeadline(i)})
 }
 
 function DetailsModal(obj){
     var index
     if (obj != null) index = Array.from(document.querySelectorAll('.top, .later')).indexOf(obj)
     DetailsModalBuilder(index)
+    SetInputs()
     var typeIndex
     var subjectIndex
     var deadlineTypeSelect = document.getElementById('deadlineTypeSelect')
@@ -35,16 +33,7 @@ function DetailsModal(obj){
 
 function updateDeadline(i){
     var id = Deadlines.data[i].id
-    var inputs = document.querySelectorAll('#modal input, #modal select')
-    var wrong = false
-    for (let i = 0; i < 3; i++) {
-        if(inputs[i].value == '0' || inputs[i].value == ''){
-            inputs[i].classList.add('wrongInput')
-            document.querySelector(`label[for=${inputs[i].id}]`).classList.add('wrongInputLabel')
-            wrong = true  
-        }
-    }
-    if(wrong) return
+    if(CheckForm()) return
     var xhr = new XMLHttpRequest()
     xhr.open("PATCH", `http://localhost:3556/deadlines/${id}`, true)
     xhr.setRequestHeader('Content-Type', 'application/json')

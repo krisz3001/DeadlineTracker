@@ -21,7 +21,7 @@ func init() {
 
 var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
-func CreateToken() string {
+func NewSessionId() string {
 	b := make([]rune, 10)
 	for i := range b {
 		b[i] = letters[rand.Intn(len(letters))]
@@ -29,11 +29,7 @@ func CreateToken() string {
 	return string(b)
 }
 
-func GetToken(r *http.Request) string {
-	return ""
-}
-
-func SendResponse(w http.ResponseWriter, i any, token string, wrapper ...string) {
+func SendResponse(w http.ResponseWriter, i any, wrapper ...string) {
 	data, err := json.Marshal(i)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -44,7 +40,6 @@ func SendResponse(w http.ResponseWriter, i any, token string, wrapper ...string)
 		data = append(data, []byte("}")...)
 	}
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Token", token)
 	w.Write(data)
 }
 
@@ -83,6 +78,8 @@ func main() {
 	methods := handlers.AllowedMethods([]string{"GET", "POST", "PATCH", "DELETE", "PUT", "HEAD", "OPTIONS"})
 	origins := handlers.AllowedOrigins([]string{"*"})
 
+	mux.HandleFunc("/signup", Controller_Signup).Methods("POST")
+	mux.HandleFunc("/login", Controller_Login).Methods("POST")
 	mux.HandleFunc("/deadlines", Controller_Deadlines).Methods("GET", "POST")
 	mux.HandleFunc("/deadlines/{id:[0-9]+}", Controller_Deadlines_Id).Methods("GET", "PATCH", "DELETE")
 	mux.HandleFunc("/subjects", Controller_Subjects).Methods("GET", "POST")

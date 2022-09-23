@@ -10,7 +10,9 @@
 <body>
     <div id="navbar">
         <a id="pageTitle" href="/">Deadline Tracker</a>
-        <button onclick="toggleModal(DeadlineModal)">Add</button>
+        <div id="navButtons">
+            <button onclick="toggleModal(SignupModal)">Sign up</button><button onclick="toggleModal(LoginModal)">Login</button><button onclick="toggleModal(DeadlineModal)">Add Deadline</button><button onclick="toggleModal(SubjectModal)">Add Subject</button><button onclick="toggleModal(DeadlineTypeModal)">Add Deadline Type</button>
+        </div>
     </div>
     <div id="soon"></div>
     <div id="deadlinesLater"></div>
@@ -26,7 +28,11 @@
     </div>
     <script src="js/index.js"></script>
     <script src="js/modal.js"></script>
+    <script src="js/signup.modal.js"></script>
+    <script src="js/login.modal.js"></script>
     <script src="js/create.deadline.modal.js"></script>
     <script src="js/display.details.modal.js"></script>
+    <script src="js/create.subject.modal.js"></script>
+    <script src="js/create.deadlinetype.modal.js"></script>
 </body>
 </html>

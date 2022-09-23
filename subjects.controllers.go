@@ -17,10 +17,6 @@ type NewSubject struct {
 }
 
 func Controller_Subjects(w http.ResponseWriter, r *http.Request) {
-	token := r.Header.Get("token")
-	if token == "" {
-		token = CreateToken()
-	}
 	switch r.Method {
 	case http.MethodGet:
 		result, err := GetSubjects()
@@ -28,10 +24,18 @@ func Controller_Subjects(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		SendResponse(w, result, token, "data")
+		SendResponse(w, result, "data")
 	case http.MethodPost:
 		var request NewSubject
 		if !DecodeRequest(w, r, &request) {
+			return
+		}
+		if exists, err := DoesSubjectExist(request); exists {
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			http.Error(w, "subject already exists with that name", http.StatusConflict)
 			return
 		}
 		err := CreateSubject(request)
@@ -39,15 +43,11 @@ func Controller_Subjects(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		SendResponse(w, struct{}{}, token)
+		SendResponse(w, struct{}{})
 	}
 }
 
 func Controller_Subjects_Id(w http.ResponseWriter, r *http.Request) {
-	token := r.Header.Get("token")
-	if token == "" {
-		token = CreateToken()
-	}
 	id, err := strconv.Atoi(mux.Vars(r)["id"])
 	if err != nil {
 		http.Error(w, "invalid id", http.StatusBadRequest)
@@ -60,7 +60,7 @@ func Controller_Subjects_Id(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		SendResponse(w, result, token, "data")
+		SendResponse(w, result, "data")
 	case http.MethodPatch:
 		var request NewSubject
 		if !DecodeRequest(w, r, &request) {
@@ -71,13 +71,13 @@ func Controller_Subjects_Id(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		SendResponse(w, struct{}{}, token)
+		SendResponse(w, struct{}{})
 	case http.MethodDelete:
 		err := DeleteSubject(id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		SendResponse(w, struct{}{}, token)
+		SendResponse(w, struct{}{})
 	}
 }

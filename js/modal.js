@@ -1,4 +1,8 @@
 var state = false
+var modal = document.querySelector('#modalBody')
+var modalTitle = document.querySelector('#modalTitle')
+var modalFooter = document.querySelector('#modalFooter')
+var inputs
 
 function toggleModal(Modal, obj){
     state = !state
@@ -16,46 +20,83 @@ function toggleModal(Modal, obj){
     document.querySelector('#modalOverlay').classList.toggle('modal-hidden')
     document.querySelector('#modal').classList.toggle('modal-hidden')
     document.querySelector('body').classList.toggle('modalOpen')
-    var e = document.querySelector('#modalBody input, #modalBody select')
-    if (e != null) e.focus()
+    inputs[0].focus()
 }
 
-function NewInput(parent, type, id, text, change, value){
+function ClearModal(){
+    modalFooter.innerHTML = ''
+    modal.innerHTML = ''
+}
+
+function SetModalTitle(title){
+    modalTitle.innerText = title
+}
+
+function SetInputs(){
+    inputs = document.querySelectorAll('#modal input, #modal select')
+}
+
+function NewInput(type, id, text, change, value){
     var label = document.createElement('label')
     var input = document.createElement('input')
     label.htmlFor = id
     label.innerText = text
     input.type = type
     input.id = id
-    input.onchange = change
-    input.value = value
-    parent.append(label, input)
+    input.oninput = change
+    if(value != undefined) input.value = value
+    modal.append(label, input)
 }
 
-function NewSelect(parent, id, text, change){
+function NewSelect(id, text, change){
     var label = document.createElement('label')
     var select = document.createElement('select')
     label.htmlFor = id
     label.innerText = text
     select.id = id
-    select.onchange = change
-    parent.append(label, select)
+    select.oninput = change
+    modal.append(label, select)
 }
 
-function NewButton(parent, text, click){
+function NewButton(text, click){
     var btn = document.createElement('button')
     btn.innerText = text
     btn.onclick = click
-    parent.append(btn)
+    modalFooter.append(btn)
 }
 
-function NewDetail(parent, key, value){
+function NewDetail(key, value){
     var p = document.createElement('p')
     p.innerText = `${key}: ${value}`
-    parent.append(p)
+    modal.append(p)
+}
+
+function NewError(text) {
+    var p = document.querySelector('.errorMessage')
+    if(p == undefined) p = document.createElement('p')
+    p.innerText = text[0].toUpperCase() + text.substring(1, text.length)
+    p.classList.add('errorMessage')
+    modal.append(p)
 }
 
 document.querySelector('#modal').addEventListener('keydown', (e) => {
     if(e.code == 'Escape') toggleModal()
     else if(e.code == 'Enter') document.querySelector('#modalFooter > button').click()
 })
+
+function inputChanged(){
+    this.classList.remove('wrongInput')
+    document.querySelector(`label[for=${this.id}]`).classList.remove('wrongInputLabel')
+}
+
+function CheckForm(){
+    var wrong = false
+    for (let i = 0; i < inputs.length; i++) {
+        if(inputs[i].value == '0' || inputs[i].value == ''){
+            inputs[i].classList.add('wrongInput')
+            document.querySelector(`label[for="${inputs[i].id}"]`).classList.add('wrongInputLabel')
+            wrong = true  
+        }
+    }
+    return wrong
+}

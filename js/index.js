@@ -50,7 +50,7 @@ function Reload(){
     var soon = document.getElementById('soon')
     var later = document.getElementById('deadlinesLater')
     fetch("http://localhost:3556/deadlines")
-    .then(res=>res.json())
+    .then(res=> res.json())
     .then(r=>{
         soon.innerHTML = ""
         later.innerHTML = ""

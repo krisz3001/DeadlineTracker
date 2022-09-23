@@ -37,6 +37,19 @@ func GetSubject(id int) (*Subject, error) {
 	return result, nil
 }
 
+func DoesSubjectExist(s NewSubject) (bool, error) {
+	rows, err := db.Query("SELECT * FROM `SUBJECTS` WHERE `SubjectName`=?", s.SubjectName)
+	if err != nil {
+		return true, err
+	}
+	defer rows.Close()
+	if rows.Next() {
+		return true, nil
+	} else {
+		return false, nil
+	}
+}
+
 func CreateSubject(s NewSubject) error {
 	_, err := db.Exec("INSERT INTO `SUBJECTS` (`SubjectName`) VALUES (?)", s.SubjectName)
 	return err
