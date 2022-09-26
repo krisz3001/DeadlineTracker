@@ -3,28 +3,18 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
-	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type Credentials struct {
-	Password string `json:"password" db:"password"`
-	Username string `json:"username" db:"username"`
+	Username string `json:"username" db:"Username"`
+	Password string `json:"password" db:"Password"`
+	Secret   string
 }
-
-type Session struct {
-	Username string    `json:"username" db:"username"`
-	Expiry   time.Time `json:"expiry" db:"expiry"`
-}
-
-var sessions = map[string]Session{}
-
-/* func (s Session) isExpired() bool {
-	return s.Expiry.Before(time.Now())
-} */
 
 func DoesUsernameExist(c Credentials) (bool, error) {
 	rows, err := db.Query("SELECT * FROM `USERS` WHERE `Username`=?", c.Username)
@@ -39,6 +29,37 @@ func DoesUsernameExist(c Credentials) (bool, error) {
 	}
 }
 
+func NewSession(id int) (string, error) {
+	Token := NewSessionId()
+	if _, err := db.Query("INSERT INTO SESSIONS(`Token`,`UserId`) VALUES (?, ?)", Token, id); err != nil {
+		return "", err
+	}
+	return Token, nil
+}
+
+func Authenticate(w http.ResponseWriter, creds Credentials) (int, string) {
+	result := db.QueryRow("SELECT `UserId` FROM USERS WHERE `Username` = ?", creds.Username)
+	var userid int
+	err := result.Scan(&userid)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			w.WriteHeader(http.StatusUnauthorized)
+			return 0, ""
+		}
+	}
+	Token, err := NewSession(userid)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return 0, ""
+	}
+	http.SetCookie(w, &http.Cookie{
+		Name:    "Token",
+		Value:   Token,
+		Expires: time.Now().AddDate(2, 0, 0),
+	})
+	return userid, Token
+}
+
 func Controller_Signup(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodPost:
@@ -46,6 +67,10 @@ func Controller_Signup(w http.ResponseWriter, r *http.Request) {
 		err := json.NewDecoder(r.Body).Decode(creds)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		if creds.Secret != "kecske" {
+			http.Error(w, "invalid secret", http.StatusUnauthorized)
 			return
 		}
 		if exists, err := DoesUsernameExist(*creds); exists {
@@ -62,6 +87,12 @@ func Controller_Signup(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
+		userid, token := Authenticate(w, *creds)
+		if userid == 0 {
+			return
+		}
+		h, m, s := time.Now().Clock()
+		fmt.Println("[" + fmt.Sprint(h) + ":" + fmt.Sprint(m) + ":" + fmt.Sprint(s) + "] " + creds.Username + " signed up. (UserId: " + fmt.Sprint(userid) + ", Token: " + token + ")")
 	}
 }
 
@@ -91,17 +122,29 @@ func Controller_Login(w http.ResponseWriter, r *http.Request) {
 		}
 		if err = bcrypt.CompareHashAndPassword([]byte(storedCreds.Password), []byte(creds.Password)); err != nil {
 			w.WriteHeader(http.StatusUnauthorized)
+			return
 		}
-		sessionToken := uuid.NewString()
-		expiresAt := time.Now().Add(120 * time.Second)
-		sessions[sessionToken] = Session{
-			Username: creds.Username,
-			Expiry:   expiresAt,
+		userid, token := Authenticate(w, *creds)
+		if userid == 0 {
+			return
 		}
-		http.SetCookie(w, &http.Cookie{
-			Name:    "session_token",
-			Value:   sessionToken,
-			Expires: expiresAt,
-		})
+		h, m, s := time.Now().Clock()
+		fmt.Println("[" + fmt.Sprint(h) + ":" + fmt.Sprint(m) + ":" + fmt.Sprint(s) + "] " + creds.Username + " logged in. (UserId: " + fmt.Sprint(userid) + ", Token: " + token + ")")
+	}
+}
+
+func Controller_Logout(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		token, _ := IsAuthorized(r)
+		result, err := db.Exec("DELETE FROM `SESSIONS` WHERE `Token`=?", token)
+		if err != nil {
+			return
+		}
+		rows, _ := result.RowsAffected()
+		if rows == 0 {
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+			return
+		}
 	}
 }

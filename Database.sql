@@ -36,14 +36,15 @@ CREATE TABLE SUGGESTIONS(
 );
 
 CREATE TABLE SESSIONS(
-	`Username` VARCHAR(255) NOT NULL,
-	`Expiry` VARCHAR(255) NOT NULL
+	`Token` VARCHAR(255) NOT NULL,
+	`UserId` VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE USERS(
 	`UserId` INT AUTO_INCREMENT,
 	`Username` VARCHAR(255) NOT NULL,
 	`Password` VARCHAR(255) NOT NULL,
+	`Level` INT DEFAULT 1,
 	`Created` DATETIME DEFAULT NOW(),
 	PRIMARY KEY(`UserId`)
 );
@@ -73,3 +74,5 @@ INSERT INTO `deadlines` VALUES (3, 1, '2022-11-18 16:00:00', 2, '11 - 18. fejeze
 INSERT INTO `deadlines` VALUES (4, 1, '2022-12-19 16:00:00', 2, '19 - 26. fejezet', 'Formája később');
 INSERT INTO `deadlines` VALUES (5, 1, '2023-1-3 14:00:00', 6, 'Követelményrendszer szerint', 'Javító zh, formája később');
 INSERT INTO `deadlines` VALUES (6, 1, '2023-1-13 14:00:00', 7, 'Követelményrendszer szerint', 'Gyakorlati utóvizsga, formája később');
+
+-- SELECT * FROM SESSIONS LEFT JOIN USERS ON users.UserId = sessions.UserId

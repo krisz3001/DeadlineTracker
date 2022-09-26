@@ -1,0 +1,73 @@
+#modal{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 15px;
+    width: 400px;
+    height: 500px;
+    background-color: #202022;
+    border-radius: 10px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+}
+#modal:focus{
+    outline: none;
+}
+#modal p{
+    margin-top: 15px;
+    font-size: 20px;
+}
+#modalTitle{
+    text-align: center;
+    font-size: 25px;
+    padding-bottom: 10px;
+}
+#modal label{
+    margin-top: 15px;
+    margin-bottom: 5px;
+    display: block;
+}
+input[type="text"], input[type="password"], input[type="datetime-local" i], select{
+    width: 100%;
+    height: 35px;
+    font-size: 17px;
+}
+#modalFooter{
+    text-align: center;
+    margin-bottom: 5px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+#closeModalBtn{
+    position: absolute;
+    right: 15px;
+    top: 15px;
+}
+#modalOverlay{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.5);
+    top: 0;
+}
+.modalOpen{
+    overflow: visible;
+}
+.modal-hidden{
+    display: none!important;
+}
+.wrongInput{
+    border: red 2px solid;
+    border-radius: 2px;
+}
+.wrongInputLabel{
+    color: red;
+}
+.errorMessage{
+    color: red;
+    text-align: center;
+}

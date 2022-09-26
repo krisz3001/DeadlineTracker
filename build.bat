@@ -1,6 +1,8 @@
 @echo off
 
 set ExeName=test
+set GOOS=windows
+set GOARCH=amd64
 
 if not exist .\build (
     mkdir .\build

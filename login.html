@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/public/css/index.css">
+    <link rel="stylesheet" href="/public/css/modal.css">
+    <title>Login</title>
+</head>
+<body>
+    <div id="loginButtons">
+        <button onclick="toggleModal(SignupModal)">Sign Up</button>
+        <button onclick="toggleModal(LoginModal)">Login</button>
+    </div>
+    <div id="modalOverlay" class="modal-hidden" onclick="toggleModal()"></div>
+    <div id="modal" class="modal-hidden dialog" tabindex="-1">
+        <div>
+            <p id="modalTitle" style="margin-top: 5px;">Modal</p>
+            <button onclick="toggleModal()" id="closeModalBtn">Close</button>
+            <hr>
+            <div id="modalBody"></div>
+        </div>
+        <div id="modalFooter"></div>
+    </div>
+    <script src="/public/js/modal.js"></script>
+    <script src="/public/js/signup.modal.js"></script>
+    <script src="/public/js/login.modal.js"></script>
+</body>
+</html>

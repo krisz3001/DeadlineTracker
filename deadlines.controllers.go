@@ -25,6 +25,11 @@ type NewDeadline struct {
 }
 
 func Controller_Deadlines(w http.ResponseWriter, r *http.Request) {
+	_, level := IsAuthorized(r)
+	if level < 1 {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
 	switch r.Method {
 	case http.MethodGet:
 		result, err := GetDeadlines()
@@ -34,6 +39,10 @@ func Controller_Deadlines(w http.ResponseWriter, r *http.Request) {
 		}
 		SendResponse(w, result, "data")
 	case http.MethodPost:
+		if level < 2 {
+			http.Error(w, "unauthorized", http.StatusUnauthorized)
+			return
+		}
 		var request NewDeadline
 		if !DecodeRequest(w, r, &request) {
 			return
@@ -48,6 +57,11 @@ func Controller_Deadlines(w http.ResponseWriter, r *http.Request) {
 }
 
 func Controller_Deadlines_Id(w http.ResponseWriter, r *http.Request) {
+	_, level := IsAuthorized(r)
+	if level < 1 {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
 	id, err := strconv.Atoi(mux.Vars(r)["id"])
 	if err != nil {
 		http.Error(w, "invalid id", http.StatusBadRequest)
@@ -62,6 +76,10 @@ func Controller_Deadlines_Id(w http.ResponseWriter, r *http.Request) {
 		}
 		SendResponse(w, result, "data")
 	case http.MethodPatch:
+		if level < 2 {
+			http.Error(w, "unauthorized", http.StatusUnauthorized)
+			return
+		}
 		var request NewDeadline
 		if !DecodeRequest(w, r, &request) {
 			return
@@ -73,6 +91,10 @@ func Controller_Deadlines_Id(w http.ResponseWriter, r *http.Request) {
 		}
 		SendResponse(w, struct{}{})
 	case http.MethodDelete:
+		if level < 2 {
+			http.Error(w, "unauthorized", http.StatusUnauthorized)
+			return
+		}
 		err := DeleteDeadline(id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
