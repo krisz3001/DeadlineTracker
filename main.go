@@ -111,7 +111,7 @@ var db *sql.DB
 func main() {
 	fmt.Println("Welcome to DeadlineTracker v1.0!")
 	var err error
-	db, err = sql.Open("mysql", "root:admin@tcp(localhost:3306)/DEADLINETRACKER")
+	db, err = sql.Open("mysql", "root:root@tcp(35.239.48.58:3306)/DEADLINETRACKER")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -136,5 +136,5 @@ func main() {
 	mux.HandleFunc("/deadlinetypes", Controller_DeadlineTypes).Methods("GET", "POST")
 	mux.HandleFunc("/deadlinetypes/{id:[0-9]+}", Controller_DeadlineTypes_Id).Methods("GET", "PATCH", "DELETE")
 
-	http.ListenAndServe(":3556", handlers.CORS(header, methods, origins)(mux))
+	http.ListenAndServe(":80", handlers.CORS(header, methods, origins)(mux))
 }

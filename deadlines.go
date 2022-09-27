@@ -8,7 +8,7 @@ import (
 
 func GetDeadlines() ([]Deadline, error) {
 	result := make([]Deadline, 0)
-	rows, err := db.Query("SELECT `Id`, `SubjectName`, `Deadline`, `DeadlineTypeName`, `Topic`, `Comments` FROM DEADLINES LEFT JOIN SUBJECTS ON deadlines.SubjectId = subjects.SubjectKey LEFT JOIN DEADLINETYPES ON deadlines.TypeId = deadlinetypes.DeadlineTypeId WHERE `Deadline` > NOW() ORDER BY `Deadline`")
+	rows, err := db.Query("SELECT `Id`, `SubjectName`, `Deadline`, `DeadlineTypeName`, `Topic`, `Comments` FROM DEADLINES LEFT JOIN SUBJECTS ON DEADLINES.SubjectId = SUBJECTS.SubjectKey LEFT JOIN DEADLINETYPES ON DEADLINES.TypeId = DEADLINETYPES.DeadlineTypeId WHERE `Deadline` > NOW() ORDER BY `Deadline`")
 	if err != nil {
 		return nil, err
 	}
