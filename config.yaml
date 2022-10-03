@@ -1,0 +1,10 @@
+server:
+  host: "localhost"
+  port: 8080
+
+database:
+  name: "DEADLINETRACKER"
+  host: "35.239.48.58"
+  port: 3306
+  username: "root"
+  password: "+Lj;3Ere<5Z?iKa\\"

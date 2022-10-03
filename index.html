@@ -5,13 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/assets/css/index.css">
     <link rel="stylesheet" href="/assets/css/modal.css">
+    <link rel="stylesheet" href="/assets/css/navbar.css">
     <title>Deadline Tracker</title>
 </head>
 <body>
+    <!--todo: Add open onclick, same height buttons, hide content on modal open, positioning-->
     <div id="navbar">
         <a id="pageTitle" href="/">Deadline Tracker</a>
-        <div id="navButtons">
-            <button onclick="toggleModal(DeadlineModal)">Add Deadline</button><button onclick="toggleModal(SubjectModal)">Add Subject</button><button onclick="toggleModal(DeadlineTypeModal)">Add Deadline Type</button><button onclick="Logout()">Log out</button>
+        <div>
+            <div class="dropdown">
+                <button class="dropbtn">Add</button>
+                <div class="dropdown-content">
+                    <a onclick="toggleModal(DeadlineModal)">Deadline</a>
+                    <a onclick="toggleModal(SubjectModal)">Subject</a>
+                    <a onclick="toggleModal(DeadlineTypeModal)">Deadline Type</a>
+                </div>
+            </div>
+            <button onclick="Logout()">Log out</button>
         </div>
     </div>
     <div id="soon"></div>

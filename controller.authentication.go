@@ -105,7 +105,7 @@ func Controller_Login(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
-		result := db.QueryRow("SELECT `PASSWORD` FROM USERS WHERE `USERNAME`=?", creds.Username)
+		result := db.QueryRow("SELECT `Password` FROM USERS WHERE `USERNAME`=?", creds.Username)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return

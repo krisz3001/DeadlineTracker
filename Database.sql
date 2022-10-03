@@ -22,6 +22,7 @@ CREATE TABLE DEADLINES(
     `TypeId` INT NOT NULL,
     `Topic` VARCHAR(255) DEFAULT "",
     `Comments` VARCHAR(1000) DEFAULT "",
+	`Fixed` INT DEFAULT 0,
 	PRIMARY KEY(`Id`)
 );
 

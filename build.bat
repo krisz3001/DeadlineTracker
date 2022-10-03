@@ -4,18 +4,14 @@ set ExeName=test
 set GOOS=windows
 set GOARCH=amd64
 
-if not exist .\build (
-    mkdir .\build
+if exist .\%ExeName%.exe (
+    del .\%ExeName%.exe
 )
 
-if exist .\build\%ExeName%.exe (
-    del .\build\%ExeName%.exe
-)
+go build -v -o .\%ExeName%.exe
 
-go build -v -o .\build\%ExeName%.exe
-
-if exist .\build\%ExeName%.exe (
-    pushd .\build
+if exist .\%ExeName%.exe (
+    pushd .\
     .\%ExeName%.exe
     popd
 )

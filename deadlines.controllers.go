@@ -14,6 +14,7 @@ type Deadline struct {
 	Type     string `json:"type"`
 	Topic    string `json:"topic"`
 	Comments string `json:"comments"`
+	Fixed    byte   `json:"fixed"`
 }
 
 type NewDeadline struct {
@@ -22,6 +23,7 @@ type NewDeadline struct {
 	TypeId    int    `json:"typeid"`
 	Topic     string `json:"topic"`
 	Comments  string `json:"comments"`
+	Fixed     byte   `json:"fixed"`
 }
 
 func Controller_Deadlines(w http.ResponseWriter, r *http.Request) {

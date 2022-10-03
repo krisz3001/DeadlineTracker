@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"html/template"
@@ -8,21 +9,53 @@ import (
 	"math/rand"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 	"time"
-
-	"database/sql"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"gopkg.in/yaml.v2"
 )
 
 var tpl *template.Template
 
 func init() {
 	rand.Seed(time.Now().UnixNano())
-	tpl = template.Must(template.ParseGlob("../*.html"))
+	tpl = template.Must(template.ParseGlob("./*.html"))
+}
+
+type Config struct {
+	Server struct {
+		Host string `yaml:"host"`
+		Port int    `yaml:"port"`
+	} `yaml:"server"`
+	Database struct {
+		Name     string `yaml:"name"`
+		Host     string `yaml:"host"`
+		Port     int    `yaml:"port"`
+		Username string `yaml:"username"`
+		Password string `yaml:"password"`
+	} `yaml:"database"`
+}
+
+func processError(err error) {
+	fmt.Println(err)
+	os.Exit(2)
+}
+
+func readFile(cfg *Config) {
+	f, err := os.Open("config.yaml")
+	if err != nil {
+		processError(err)
+	}
+	defer f.Close()
+	decoder := yaml.NewDecoder(f)
+	err = decoder.Decode(cfg)
+	if err != nil {
+		processError(err)
+	}
 }
 
 var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
@@ -64,7 +97,7 @@ func IsAuthorized(r *http.Request) (string, int) {
 	if err == http.ErrNoCookie {
 		return "", 0
 	}
-	result := db.QueryRow("SELECT `Level` FROM SESSIONS LEFT JOIN USERS ON users.UserId = sessions.UserId WHERE `Token`=?", token.Value)
+	result := db.QueryRow("SELECT `Level` FROM SESSIONS LEFT JOIN USERS ON USERS.UserId = SESSIONS.UserId WHERE `Token`=?", token.Value)
 	var level int
 	err = result.Scan(&level)
 	if err != nil {
@@ -107,16 +140,23 @@ func Controller_Assets(prefix string, h http.Handler) http.Handler {
 }
 
 var db *sql.DB
+var cfg Config
 
 func main() {
+	readFile(&cfg)
 	fmt.Println("Welcome to DeadlineTracker v1.0!")
 	var err error
-	db, err = sql.Open("mysql", "root:root@tcp(35.239.48.58:3306)/DEADLINETRACKER")
+	db, err = sql.Open("mysql", cfg.Database.Username+":"+cfg.Database.Password+"@tcp("+fmt.Sprint(cfg.Database.Host)+":"+fmt.Sprint(cfg.Database.Port)+")/"+cfg.Database.Name)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer db.Close()
-	fmt.Println("Connected to database.")
+	err = db.Ping()
+	if err == nil {
+		fmt.Println("Connected to database!")
+	} else {
+		log.Fatal(err)
+	}
 	mux := mux.NewRouter()
 
 	header := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization", "X-Content-Type-Options"})
@@ -136,5 +176,5 @@ func main() {
 	mux.HandleFunc("/deadlinetypes", Controller_DeadlineTypes).Methods("GET", "POST")
 	mux.HandleFunc("/deadlinetypes/{id:[0-9]+}", Controller_DeadlineTypes_Id).Methods("GET", "PATCH", "DELETE")
 
-	http.ListenAndServe(":80", handlers.CORS(header, methods, origins)(mux))
+	http.ListenAndServe(":"+fmt.Sprint(cfg.Server.Port), handlers.CORS(header, methods, origins)(mux))
 }
